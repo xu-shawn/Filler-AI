@@ -22,7 +22,7 @@ score1 = 1
 score2 = 1
 evalScore = 0
 selection = [0, 0]
-tally = [0, 0, 0] # Player1, Player2, Tie
+tally = [0, 0, 0]  # Player1, Player2, Tie
 windowSize = boardSize * cellSize + 2 * padding
 colors = [
     (242, 39, 113),
@@ -30,11 +30,11 @@ colors = [
     (68, 193, 242),
     (164, 217, 85),
     (242, 208, 39),
-    (66, 64, 67)
+    (66, 64, 67),
 ]
 
 pygame.font.init()
-GAME_FONT = pygame.freetype.SysFont('Comic Sans MS', 30)
+GAME_FONT = pygame.freetype.SysFont("Comic Sans MS", 30)
 
 # Set up the display
 screen = pygame.display.set_mode((windowSize, windowSize))
@@ -50,16 +50,44 @@ player2 = Player((0, boardSize - 1))
 player1.color = gameBoard.board[boardSize - 2][0]
 player2.color = gameBoard.board[0][boardSize - 1]
 
+
 # Function to draw the board
 def draw_board() -> None:
-    for row in range(boardSize-1):
+    for row in range(boardSize - 1):
         for col in range(boardSize):
             color = colors[gameBoard.board[row][col]]
             if selection == [col, row] and editing:
-                pygame.draw.rect(screen, (0, 0, 0), (col * cellSize + padding, row * cellSize + padding, cellSize, cellSize))
-                pygame.draw.rect(screen, color, (col * cellSize + padding + 5, row * cellSize + padding + 5, cellSize - 10, cellSize - 10))
+                pygame.draw.rect(
+                    screen,
+                    (0, 0, 0),
+                    (
+                        col * cellSize + padding,
+                        row * cellSize + padding,
+                        cellSize,
+                        cellSize,
+                    ),
+                )
+                pygame.draw.rect(
+                    screen,
+                    color,
+                    (
+                        col * cellSize + padding + 5,
+                        row * cellSize + padding + 5,
+                        cellSize - 10,
+                        cellSize - 10,
+                    ),
+                )
             else:
-                pygame.draw.rect(screen, color, (col * cellSize + padding, row * cellSize + padding, cellSize, cellSize))
+                pygame.draw.rect(
+                    screen,
+                    color,
+                    (
+                        col * cellSize + padding,
+                        row * cellSize + padding,
+                        cellSize,
+                        cellSize,
+                    ),
+                )
 
     # # Score - Was not working, always 1 move behind, do not care to fix lol
     # GAME_FONT.render_to(screen, (300, 50), str(score1), colors[gameBoard.board[6][0]])
@@ -72,7 +100,9 @@ def draw_board() -> None:
     elif evalScore < -10:
         pygame.draw.rect(screen, colors[gameBoard.board[0][7]], (20, 150, 50, 0))
     else:
-        pygame.draw.rect(screen, colors[gameBoard.board[0][7]], (20, 150, 50, 225+22.5*evalScore))
+        pygame.draw.rect(
+            screen, colors[gameBoard.board[0][7]], (20, 150, 50, 225 + 22.5 * evalScore)
+        )
 
 
 # Draw buttons
@@ -84,15 +114,17 @@ buttonArray = ButtonArray(
     buttonSize,  # Height
     (6, 1),  # Shape: 6 buttons wide, 1 buttons tall
     border=5,  # Distance between buttons and edge of array
-    texts=('1', '2', '3', '4', '5', '6'),  # Sets the texts of each button
+    texts=("1", "2", "3", "4", "5", "6"),  # Sets the texts of each button
     inactiveColours=(colors[0], colors[1], colors[2], colors[3], colors[4], colors[5]),
-    colour = (255, 255, 255),
-    onClicks=(lambda: handle_player_input(1),
-              lambda: handle_player_input(2),
-              lambda: handle_player_input(3),
-              lambda: handle_player_input(4),
-              lambda: handle_player_input(5),
-              lambda: handle_player_input(6))
+    colour=(255, 255, 255),
+    onClicks=(
+        lambda: handle_player_input(1),
+        lambda: handle_player_input(2),
+        lambda: handle_player_input(3),
+        lambda: handle_player_input(4),
+        lambda: handle_player_input(5),
+        lambda: handle_player_input(6),
+    ),
 )
 
 
@@ -108,7 +140,6 @@ def handle_player_input(playerInput) -> None:
         draw_board()
         pygame.display.flip()
 
-
         minMaxClass = minmax.MinMax(gameBoard)
         best_path_colors, best_score = minMaxClass.evaluate_tree(gameBoard, DEPTH, 1)
 
@@ -118,11 +149,17 @@ def handle_player_input(playerInput) -> None:
 
         player2.addPositionsWithColor(gameBoard, best_path_colors[0][2])
 
-        print("Player1: ", len(player1.positionsControlled), " Player2: ", len(player2.positionsControlled))
+        print(
+            "Player1: ",
+            len(player1.positionsControlled),
+            " Player2: ",
+            len(player2.positionsControlled),
+        )
         score1 = str(len(player1.positionsControlled))
         score2 = str(len(player2.positionsControlled))
     else:
         print("Choose a valid color")
+
 
 def handle_auto() -> None:
     global score1
@@ -150,6 +187,7 @@ def handle_auto() -> None:
     elif len(positions[1]) == 23 and len(positions[0]) == 23:
         tally[2] += 1
         restart()
+
 
 def restart() -> None:
     global gameBoard
@@ -196,7 +234,9 @@ while running and not auto:
                     selection[1] += 1
             elif pygame.K_1 <= event.key <= pygame.K_6:
                 if editing:
-                    gameBoard.board[selection[1]][selection[0]] = event.key - pygame.K_0 - 1
+                    gameBoard.board[selection[1]][selection[0]] = (
+                        event.key - pygame.K_0 - 1
+                    )
                 else:
                     playerInput = event.key - pygame.K_0
                     handle_player_input(playerInput)
